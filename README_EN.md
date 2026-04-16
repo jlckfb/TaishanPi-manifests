@@ -1,12 +1,12 @@
 # TaishanPi Manifests
 
-[English](README_EN.md) | 中文
+[中文](README.md) | English
 
-TaishanPi 系列开发板的 `repo` manifest 统一管理仓库。每个 SDK 版本对应一个独立分支，包含 `default.xml` 和专属安装脚本。
+Unified `repo` manifest repository for TaishanPi series development boards. Each SDK version lives on its own branch with a `default.xml` and a dedicated setup script.
 
-## 一键安装
+## One-Click Install
 
-通过统一入口脚本，指定 `-b` 分支即可自动下载对应版本的安装脚本并执行：
+Use the bootstrap script with `-b` to specify the branch:
 
 ```bash
 # Android14 - TaishanPi-3
@@ -16,12 +16,12 @@ curl -fsSL https://raw.githubusercontent.com/jlckfb/manifests/main/install.sh | 
 curl -fsSL https://raw.githubusercontent.com/jlckfb/manifests/main/install.sh | bash -s -- -b linux/tspi-3-260402
 ```
 
-## 手动下载
+## Manual Download
 
-如果只需要拉取源码（不安装编译依赖），可直接使用 `repo`：
+To fetch source code only (without installing build dependencies), use `repo` directly:
 
 ```bash
-# 安装 repo
+# Install repo
 mkdir -p ~/.bin
 curl -fsSL https://cnb.cool/jlckfb/git-repo/-/git/raw/main/repo -o ~/.bin/repo
 chmod a+rx ~/.bin/repo
@@ -40,25 +40,25 @@ repo init -u https://github.com/jlckfb/manifests.git -b linux/tspi-3-260402 --de
 repo sync -c --no-clone-bundle -j$(nproc)
 ```
 
-## 可用版本
+## Available Versions
 
-| 系统 | 开发板 | 分支 | 代码托管 |
-|------|--------|------|----------|
+| OS | Board | Branch | Code Hosting |
+|----|-------|--------|--------------|
 | Android14 | TaishanPi-3 (RK3576) | `android14/tspi-3-260416` | [cnb.cool](https://cnb.cool/TaishanPi-Rockchip-Android) |
 | Linux | TaishanPi-3 (RK3576) | `linux/tspi-3-260402` | [gitcode.com](https://gitcode.com/TaishanPi-Rockchip) |
 
-## 仓库结构
+## Repository Structure
 
 ```
-main                        ← 入口脚本 install.sh + README 索引
-android14/tspi-3-260416     ← default.xml + setup.sh (Android14 专用)
-linux/tspi-3-260402         ← default.xml (占位，待迁移)
+main                        ← Bootstrap install.sh + README
+android14/tspi-3-260416     ← default.xml + setup.sh (Android14)
+linux/tspi-3-260402         ← default.xml (placeholder, pending migration)
 ```
 
-## 分支命名规则
+## Branch Naming Convention
 
 ```
 {os}{version}/{board}-{date}
 ```
 
-示例：`android14/tspi-3-260416`、`android15/tspi-3-xxxxxx`、`linux/tspi-3-260402`
+Examples: `android14/tspi-3-260416`, `android15/tspi-3-xxxxxx`, `linux/tspi-3-260402`
