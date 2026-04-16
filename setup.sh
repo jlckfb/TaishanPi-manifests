@@ -193,8 +193,6 @@ MANIFEST_BRANCH="android14/tspi-3-260416"
 MANIFEST_URL="https://github.com/jlckfb/manifests.git"
 REPO_DOWNLOAD_URL="https://cnb.cool/jlckfb/git-repo/-/git/raw/main/repo"
 
-LFS_REPOS=()
-
 detect_region() {
     if [[ -n "${TSPI_REGION:-}" ]]; then
         case "${TSPI_REGION}" in
@@ -527,7 +525,7 @@ install_live_build() {
     echo ""
     local LIVE_BUILD_DIR="/tmp/live-build-$$"
     CLEANUP_FILES+=("$LIVE_BUILD_DIR")
-    git clone https://gitcode.com/TaishanPi-Rockchip/live-build.git -b "debian/1%20230131" "$LIVE_BUILD_DIR" >> "$LOG_FILE" 2>&1 &
+    git clone https://cnb.cool/TaishanPi-Rockchip-Linux/live-build.git -b "debian/1%20230131" "$LIVE_BUILD_DIR" >> "$LOG_FILE" 2>&1 &
     show_spinner $! "Cloning live-build"
     local clone_ret=$?
     if [[ $clone_ret -ne 0 ]]; then
@@ -728,58 +726,44 @@ fetch_lfs_objects() {
     log_step "Fetching Git LFS objects"
     echo ""
     SDK_DIR="$PWD/TaishanPi-3-Android14"
-    local total=${#LFS_REPOS[@]}
+
+    # Auto-detect repos with LFS files using repo list + git lfs ls-files
+    log_info "Scanning all repositories for LFS files..."
+    local -a lfs_repos=()
+    while IFS=: read -r repo_path _; do
+        repo_path=$(echo "$repo_path" | sed 's/^ *//;s/ *$//')
+        local full_path="$SDK_DIR/$repo_path"
+        if [[ -d "$full_path" ]]; then
+            local lfs_count
+            lfs_count=$(git -C "$full_path" lfs ls-files 2>/dev/null | wc -l)
+            if [[ "$lfs_count" -gt 0 ]]; then
+                lfs_repos+=("$repo_path")
+                log_debug "LFS detected: $repo_path ($lfs_count files)"
+            fi
+        fi
+    done < <("$HOME/.bin/repo" list 2>/dev/null)
+
+    local total=${#lfs_repos[@]}
+    if [[ $total -eq 0 ]]; then
+        log_info "No LFS repositories detected, skipping"
+        echo ""
+        return 0
+    fi
+    log_info "Found $total repos with LFS objects"
+
     local current=0
-    for lfs_path in "${LFS_REPOS[@]}"; do
+    for lfs_path in "${lfs_repos[@]}"; do
         ((current++))
         local full_path="$SDK_DIR/$lfs_path"
-        if [[ ! -d "$full_path" ]]; then
-            log_warn "LFS path not found: $lfs_path"
-            show_progress $current $total "$lfs_path (skipped)"
-            continue
-        fi
         pushd "$full_path" > /dev/null
         git lfs install --local >> "$LOG_FILE" 2>&1
 
-        # Stream LFS progress to user while logging
-        local lfs_progress_file
-        lfs_progress_file=$(mktemp)
-        CLEANUP_FILES+=("$lfs_progress_file")
-
-        git lfs pull 2>&1 | tee -a "$LOG_FILE" > "$lfs_progress_file" &
-        local lfs_pid=$!
-        local -a lframes=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
-        local si=0
-        local start_ts=$SECONDS
-        BG_PIDS+=("$lfs_pid")
-        while kill -0 $lfs_pid 2>/dev/null; do
-            si=$(( (si+1) % ${#lframes[@]} ))
-            local elapsed=$(( SECONDS - start_ts ))
-            local lfs_status
-            lfs_status=$(tail -1 "$lfs_progress_file" 2>/dev/null | tr -d '\r' | sed 's/\x1b\[[0-9;]*m//g' | head -c 60)
-            if [[ -n "$lfs_status" && "$lfs_status" == *"%"* ]]; then
-                printf "\r\033[K  %s LFS (%d/%d) %s: %s [%02d:%02d]" "${lframes[$si]}" "$current" "$total" "$lfs_path" "$lfs_status" $((elapsed/60)) $((elapsed%60))
-            else
-                printf "\r\033[K  %s LFS (%d/%d) %s... [%02d:%02d]" "${lframes[$si]}" "$current" "$total" "$lfs_path" $((elapsed/60)) $((elapsed%60))
-            fi
-            sleep 0.3
-        done
-        wait $lfs_pid
+        git lfs pull >> "$LOG_FILE" 2>&1 &
+        show_spinner $! "LFS ($current/$total) $lfs_path"
         local lfs_ret=$?
-        local new_pids=()
-        for p in "${BG_PIDS[@]}"; do
-            [[ "$p" != "$lfs_pid" ]] && new_pids+=("$p")
-        done
-        BG_PIDS=("${new_pids[@]}")
-        rm -f "$lfs_progress_file"
 
-        local elapsed=$(( SECONDS - start_ts ))
-        printf "\r\033[K"
         if [[ $lfs_ret -ne 0 ]]; then
-            echo -e "${RED}[ERR]${NC} LFS ($current/$total) ${lfs_path} ${RED}Failed${NC} ${DIM}($(printf '%02d:%02d' $((elapsed/60)) $((elapsed%60))))${NC}"
             log_warn "LFS pull failed: $lfs_path"
-        else
-            echo -e "${GREEN}[OK]${NC} LFS ($current/$total) ${lfs_path} ${DIM}($(printf '%02d:%02d' $((elapsed/60)) $((elapsed%60))))${NC}"
         fi
         popd > /dev/null
     done
@@ -806,13 +790,13 @@ main() {
     echo ""
 
     local stage_start=$SECONDS
-    CURRENT_STAGE="Stage 1/5: Network Detection"
+    CURRENT_STAGE="Stage 1/6: Network Detection"
     print_box "$CURRENT_STAGE" "$BLUE"
     detect_region || return 1
     log_debug "Stage completed in $(format_duration $((SECONDS - stage_start)))"
 
     stage_start=$SECONDS
-    CURRENT_STAGE="Stage 2/5: System Check"
+    CURRENT_STAGE="Stage 2/6: System Check"
     print_box "$CURRENT_STAGE" "$BLUE"
     check_sudo_available || return 1
     check_ubuntu_version || return 1
@@ -821,7 +805,7 @@ main() {
     log_debug "Stage completed in $(format_duration $((SECONDS - stage_start)))"
 
     stage_start=$SECONDS
-    CURRENT_STAGE="Stage 3/5: Install Dependencies"
+    CURRENT_STAGE="Stage 3/6: Install Dependencies"
     print_box "$CURRENT_STAGE" "$BLUE"
     configure_apt_mirror || return 1
     check_network || return 1
@@ -829,13 +813,13 @@ main() {
     log_debug "Stage completed in $(format_duration $((SECONDS - stage_start)))"
 
     stage_start=$SECONDS
-    CURRENT_STAGE="Stage 4/5: Setup Repo"
+    CURRENT_STAGE="Stage 4/6: Setup Repo"
     print_box "$CURRENT_STAGE" "$BLUE"
     setup_repo_tool || return 1
     log_debug "Stage completed in $(format_duration $((SECONDS - stage_start)))"
 
     stage_start=$SECONDS
-    CURRENT_STAGE="Stage 5/5: Clone SDK"
+    CURRENT_STAGE="Stage 5/6: Clone SDK"
     print_box "$CURRENT_STAGE" "$BLUE"
     local do_clone=""
     safe_read "Clone TaishanPi-3 Android14 SDK now? [y/N]: " do_clone
@@ -844,6 +828,17 @@ main() {
         clone_sdk || return 1
     else
         log_warn "SDK clone skipped by user"
+        echo ""
+    fi
+    log_debug "Stage completed in $(format_duration $((SECONDS - stage_start)))"
+
+    stage_start=$SECONDS
+    CURRENT_STAGE="Stage 6/6: Fetch LFS Objects"
+    print_box "$CURRENT_STAGE" "$BLUE"
+    if [[ -d "$SDK_DIR" ]]; then
+        fetch_lfs_objects || return 1
+    else
+        log_warn "SDK directory not found, skipping LFS fetch"
         echo ""
     fi
     log_debug "Stage completed in $(format_duration $((SECONDS - stage_start)))"
