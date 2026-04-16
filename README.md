@@ -10,20 +10,30 @@
 
 ### 系统要求
 
-- Ubuntu 20.04 / 22.04 LTS (x86_64)
+- Ubuntu 22.04 LTS (x86_64)
 - 磁盘空间 >= 500GB
 - 内存 >= 32GB
 
-### 下载源码
+### 一键安装
 
 ```bash
-# 安装 repo (如已安装可跳过)
+curl -fsSL https://raw.githubusercontent.com/jlckfb/manifests/main/install.sh | bash -s -- -b android14/tspi-3-260416
+```
+
+脚本会自动完成：检测网络环境、安装编译依赖（OpenJDK 11 等）、下载 repo 工具、克隆 SDK 源码。
+
+### 手动下载
+
+```bash
+# 1. 安装 repo
 mkdir -p ~/.bin
-curl -L https://storage.googleapis.com/git-repo-downloads/repo -o ~/.bin/repo
+curl -fsSL https://cnb.cool/jlckfb/git-repo/-/git/raw/main/repo -o ~/.bin/repo
 chmod a+rx ~/.bin/repo
 export PATH="$HOME/.bin:$PATH"
+export REPO_URL="https://cnb.cool/jlckfb/git-repo"
+export REPO_REV="main"
 
-# 初始化并同步
+# 2. 初始化并同步
 mkdir -p ~/TaishanPi-3-Android14 && cd ~/TaishanPi-3-Android14
 repo init -u https://github.com/jlckfb/manifests.git -b android14/tspi-3-260416 --depth=1
 repo sync -c -j$(nproc)
