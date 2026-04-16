@@ -53,14 +53,14 @@ repo sync -c --no-clone-bundle -j$(nproc)
 | OS / 系统 | Board / 开发板 | Branch / 分支 | Code Hosting / 代码托管 |
 |-----------|---------------|--------------|------------------------|
 | Android14 | TaishanPi-3 (RK3576) | `android14/tspi-3-260416` | [cnb.cool](https://cnb.cool/TaishanPi-Rockchip-Android) |
-| Linux | TaishanPi-3 (RK3576) | `linux/tspi-3-260402` | [gitcode.com](https://gitcode.com/TaishanPi-Rockchip) |
+| Linux | TaishanPi-3 (RK3576) | `linux/tspi-3-260402` | [cnb.cool](https://cnb.cool/TaishanPi-Rockchip-Linux) |
 
 ## Repository Structure / 仓库结构
 
 ```
 main                        ← Bootstrap install.sh + README / 入口脚本 + 说明
 android14/tspi-3-260416     ← default.xml + setup.sh (Android14)
-linux/tspi-3-260402         ← default.xml (placeholder / 占位，待迁移)
+linux/tspi-3-260402         ← default.xml + setup.sh (Linux)
 ```
 
 ## Branch Naming Convention / 分支命名规则
