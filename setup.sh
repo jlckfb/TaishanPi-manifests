@@ -311,7 +311,7 @@ check_cpu() {
 check_storage() {
     log_step "Checking disk space"
     echo ""
-    local min_disk=500
+    local min_disk=300
     local available=$(df -BG / | awk 'NR==2 {print $4}' | tr -d 'G')
     local used=$(df -BG / | awk 'NR==2 {print $3}' | tr -d 'G')
     local total=$(df -BG / | awk 'NR==2 {print $2}' | tr -d 'G')
@@ -662,8 +662,8 @@ clone_sdk() {
     mkdir -p "$SDK_DIR"
     pushd "$SDK_DIR" > /dev/null
 
-    echo -e "${CYAN}  SDK requires ~30GB disk space${NC}"
-    echo -e "${CYAN}  Estimated time: 30-90 min depending on network speed${NC}"
+    echo -e "${CYAN}  SDK source: ~100GB, build output: ~150GB, recommended: 300GB+${NC}"
+    echo -e "${CYAN}  Estimated download time: 1-3 hours depending on network speed${NC}"
     echo ""
 
     if ! git config --global user.name &>/dev/null; then
