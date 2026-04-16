@@ -3,96 +3,97 @@
   <remote name="cnb" fetch="https://cnb.cool/TaishanPi-Rockchip-Linux" />
   <default remote="cnb" revision="tspi-3-Linux-260402" />
 
-  <project name="external.security.rk_tee_user" path="external/security/rk_tee_user" />
-  <project name="u-boot" path="u-boot" />
-  <project name="app.lvgl_demo" path="app/lvgl_demo" />
-  <project name="app.rkipc" path="app/rkipc" />
-  <project name="app.rkpartybox" path="app/rkpartybox" />
-  <project name="app.ipcweb-backend" path="app/ipcweb-backend" />
-  <project name="docs" path="docs" />
-  <project name="docs" path="docs/cn">
+  <project name="external.security.rk_tee_user" path="external/security/rk_tee_user" clone-depth="1" />
+  <project name="u-boot" path="u-boot" clone-depth="1" />
+  <project name="app.lvgl_demo" path="app/lvgl_demo" clone-depth="1" />
+  <project name="app.rkipc" path="app/rkipc" clone-depth="1" />
+  <project name="app.rkpartybox" path="app/rkpartybox" clone-depth="1" />
+  <project name="app.tspi-overlay-config" path="app/tspi-overlay-config" clone-depth="1" />
+  <project name="app.ipcweb-backend" path="app/ipcweb-backend" clone-depth="1" />
+  <project name="docs" path="docs" clone-depth="1" />
+  <project name="docs" path="docs/cn" clone-depth="1">
     <linkfile src="Rockchip_Developer_Guide_Linux_Software_CN.pdf" dest="docs/cn/RK3576/Rockchip_Developer_Guide_Linux_Software_CN.pdf" />
   </project>
-  <project name="docs" path="docs/en">
+  <project name="docs" path="docs/en" clone-depth="1">
     <linkfile src="Rockchip_Developer_Guide_Linux_Software_EN.pdf" dest="docs/en/RK3576/Rockchip_Developer_Guide_Linux_Software_EN.pdf" />
   </project>
-  <project name="docs.internal" path="docs/cn/RK3576" />
-  <project name="docs.internal" path="docs/en/RK3576" />
-  <project name="app.rkadk" path="app/rkadk" />
-  <project name="yocto.build.conf" path="yocto/build/conf" />
-  <project name="buildroot" path="buildroot">
+  <project name="docs.internal" path="docs/cn/RK3576" clone-depth="1" />
+  <project name="docs.internal" path="docs/en/RK3576" clone-depth="1" />
+  <project name="app.rkadk" path="app/rkadk" clone-depth="1" />
+  <project name="yocto.build.conf" path="yocto/build/conf" clone-depth="1" />
+  <project name="buildroot" path="buildroot" clone-depth="1">
     <linkfile src="build/envsetup.sh" dest="envsetup.sh" />
   </project>
-  <project name="debian" path="debian" />
-  <project name="ubuntu" path="ubuntu" />
-  <project name="device.rockchip" path="device/rockchip">
+  <project name="debian" path="debian" clone-depth="1" />
+  <project name="ubuntu" path="ubuntu" clone-depth="1" />
+  <project name="device.rockchip" path="device/rockchip" clone-depth="1">
     <linkfile src="common/scripts/build.sh" dest="build.sh" />
     <linkfile src="common/Makefile" dest="Makefile" />
     <linkfile src="common/scripts/rkflash.sh" dest="rkflash.sh" />
   </project>
-  <project name="external.drm-cursor" path="external/drm-cursor" />
-  <project name="external.alsa-config" path="external/alsa-config" />
-  <project name="external.camera_engine_rkaiq" path="external/camera_engine_rkaiq" />
-  <project name="external.chromium" path="external/chromium" />
-  <project name="external.common_algorithm" path="external/common_algorithm" />
-  <project name="external.dpdk" path="external/dpdk" />
-  <project name="external.minilogger" path="external/minilogger" />
-  <project name="external.rk_ethercat_release" path="external/rk_ethercat_release" />
-  <project name="external.rk_pcba_test" path="external/rk_pcba_test" />
-  <project name="external.rkscript" path="external/rkscript" />
-  <project name="external.rktoolkit" path="external/rktoolkit" />
-  <project name="external.rkupdate" path="external/rkupdate" />
-  <project name="external.rkwifibt" path="external/rkwifibt" />
-  <project name="external.rkwifibt-app" path="external/rkwifibt-app" />
-  <project name="external.rockit_uvc" path="external/rockit_uvc" />
-  <project name="external.uac_app" path="external/uac_app" />
-  <project name="external.uvc_app" path="external/uvc_app" />
-  <project name="external.gstreamer-rockchip" path="external/gstreamer-rockchip" />
-  <project name="external.avs" path="external/avs" />
-  <project name="external.iva" path="external/iva" />
-  <project name="external.samples" path="external/samples" />
-  <project name="external.libmali" path="external/libmali" />
-  <project name="external.linux-rga" path="external/linux-rga" />
-  <project name="yocto.meta-browser" path="yocto/meta-browser" />
-  <project name="yocto.meta-clang" path="yocto/meta-clang" />
-  <project name="yocto.meta-openembedded" path="yocto/meta-openembedded" />
-  <project name="yocto.poky" path="yocto/poky">
+  <project name="external.drm-cursor" path="external/drm-cursor" clone-depth="1" />
+  <project name="external.alsa-config" path="external/alsa-config" clone-depth="1" />
+  <project name="external.camera_engine_rkaiq" path="external/camera_engine_rkaiq" clone-depth="1" />
+  <project name="external.chromium" path="external/chromium" clone-depth="1" />
+  <project name="external.common_algorithm" path="external/common_algorithm" clone-depth="1" />
+  <project name="external.dpdk" path="external/dpdk" clone-depth="1" />
+  <project name="external.minilogger" path="external/minilogger" clone-depth="1" />
+  <project name="external.rk_ethercat_release" path="external/rk_ethercat_release" clone-depth="1" />
+  <project name="external.rk_pcba_test" path="external/rk_pcba_test" clone-depth="1" />
+  <project name="external.rkscript" path="external/rkscript" clone-depth="1" />
+  <project name="external.rktoolkit" path="external/rktoolkit" clone-depth="1" />
+  <project name="external.rkupdate" path="external/rkupdate" clone-depth="1" />
+  <project name="external.rkwifibt" path="external/rkwifibt" clone-depth="1" />
+  <project name="external.rkwifibt-app" path="external/rkwifibt-app" clone-depth="1" />
+  <project name="external.rockit_uvc" path="external/rockit_uvc" clone-depth="1" />
+  <project name="external.uac_app" path="external/uac_app" clone-depth="1" />
+  <project name="external.uvc_app" path="external/uvc_app" clone-depth="1" />
+  <project name="external.gstreamer-rockchip" path="external/gstreamer-rockchip" clone-depth="1" />
+  <project name="external.avs" path="external/avs" clone-depth="1" />
+  <project name="external.iva" path="external/iva" clone-depth="1" />
+  <project name="external.samples" path="external/samples" clone-depth="1" />
+  <project name="external.libmali" path="external/libmali" clone-depth="1" />
+  <project name="external.linux-rga" path="external/linux-rga" clone-depth="1" />
+  <project name="yocto.meta-browser" path="yocto/meta-browser" clone-depth="1" />
+  <project name="yocto.meta-clang" path="yocto/meta-clang" clone-depth="1" />
+  <project name="yocto.meta-openembedded" path="yocto/meta-openembedded" clone-depth="1" />
+  <project name="yocto.poky" path="yocto/poky" clone-depth="1">
     <linkfile src="scripts" dest="yocto/scripts" />
     <linkfile src="bitbake" dest="yocto/bitbake" />
     <linkfile src="meta-poky" dest="yocto/meta-poky" />
     <linkfile src=".templateconf" dest="yocto/.templateconf" />
     <linkfile src="oe-init-build-env" dest="yocto/oe-init-build-env" />
   </project>
-  <project name="external.recovery" path="external/recovery" />
-  <project name="external.rkfsmk" path="external/rkfsmk" />
-  <project name="external.rockchip-test" path="external/rockchip-test" />
-  <project name="external.rockit" path="external/rockit">
+  <project name="external.recovery" path="external/recovery" clone-depth="1" />
+  <project name="external.rkfsmk" path="external/rkfsmk" clone-depth="1" />
+  <project name="external.rockchip-test" path="external/rockchip-test" clone-depth="1" />
+  <project name="external.rockit" path="external/rockit" clone-depth="1">
     <linkfile src="." dest="rtos/bsp/rockchip/common/drivers/rockit" />
   </project>
-  <project name="external.security.bin" path="external/security/bin" />
-  <project name="tools" path="tools" />
-  <project name="external.xserver" path="external/xserver" />
-  <project name="yocto.meta-rockchip" path="yocto/meta-rockchip" />
-  <project name="kernel-6.1" path="kernel-6.1">
+  <project name="external.security.bin" path="external/security/bin" clone-depth="1" />
+  <project name="tools" path="tools" clone-depth="1" />
+  <project name="external.xserver" path="external/xserver" clone-depth="1" />
+  <project name="yocto.meta-rockchip" path="yocto/meta-rockchip" clone-depth="1" />
+  <project name="kernel-6.1" path="kernel-6.1" clone-depth="1">
     <linkfile src="." dest="kernel" />
   </project>
-  <project name="external.security.librkcrypto" path="external/security/librkcrypto" />
-  <project name="hal" path="hal">
+  <project name="external.security.librkcrypto" path="external/security/librkcrypto" clone-depth="1" />
+  <project name="hal" path="hal" clone-depth="1">
     <linkfile src="." dest="rtos/bsp/rockchip/common/hal" />
   </project>
-  <project name="hal.applications" path="hal/applications" />
-  <project name="hal.board" path="hal/board" />
-  <project name="hal.middleware" path="hal/middleware" />
-  <project name="hal.test" path="hal/test" />
-  <project name="external.mpp" path="external/mpp" />
-  <project name="prebuilts.arm-gnu-toolchain-13.2-aarch64-none-elf" path="prebuilts/gcc/linux-x86/aarch64/arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf" />
-  <project name="prebuilts.gcc-arm-10.3-aarch64-none-linux-gnu" path="prebuilts/gcc/linux-x86/aarch64/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu" />
-  <project name="prebuilts.gcc-arm-10.3-arm-none-linux-gnueabihf" path="prebuilts/gcc/linux-x86/arm/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf" />
-  <project name="prebuilts.gcc-arm-none-eabi-10-q4-linux" path="prebuilts/gcc/linux-x86/arm/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux" />
-  <project name="rkbin" path="rkbin" />
-  <project name="external.rknn-toolkit2" path="external/rknn-toolkit2" />
-  <project name="external.rknpu2" path="external/rknpu2" />
-  <project name="docs.rtt-docs" path="docs/rtt-docs" />
-  <project name="rtos" path="rtos" />
-  <project name="rtos.applications.rtthread-apps" path="rtos/applications/rtthread-apps" />
+  <project name="hal.applications" path="hal/applications" clone-depth="1" />
+  <project name="hal.board" path="hal/board" clone-depth="1" />
+  <project name="hal.middleware" path="hal/middleware" clone-depth="1" />
+  <project name="hal.test" path="hal/test" clone-depth="1" />
+  <project name="external.mpp" path="external/mpp" clone-depth="1" />
+  <project name="prebuilts.arm-gnu-toolchain-13.2-aarch64-none-elf" path="prebuilts/gcc/linux-x86/aarch64/arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf" clone-depth="1" />
+  <project name="prebuilts.gcc-arm-10.3-aarch64-none-linux-gnu" path="prebuilts/gcc/linux-x86/aarch64/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu" clone-depth="1" />
+  <project name="prebuilts.gcc-arm-10.3-arm-none-linux-gnueabihf" path="prebuilts/gcc/linux-x86/arm/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf" clone-depth="1" />
+  <project name="prebuilts.gcc-arm-none-eabi-10-q4-linux" path="prebuilts/gcc/linux-x86/arm/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux" clone-depth="1" />
+  <project name="rkbin" path="rkbin" clone-depth="1" />
+  <project name="external.rknn-toolkit2" path="external/rknn-toolkit2" clone-depth="1" />
+  <project name="external.rknpu2" path="external/rknpu2" clone-depth="1" />
+  <project name="docs.rtt-docs" path="docs/rtt-docs" clone-depth="1" />
+  <project name="rtos" path="rtos" clone-depth="1" />
+  <project name="rtos.applications.rtthread-apps" path="rtos/applications/rtthread-apps" clone-depth="1" />
 </manifest>
