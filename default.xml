@@ -1,5 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-  <!-- Linux SDK manifest placeholder -->
-  <!-- TODO: add project entries when Linux repos are migrated -->
+  <remote name="cnb" fetch="https://cnb.cool/TaishanPi-Rockchip-Linux" />
+  <default remote="cnb" revision="tspi-3-Linux-260402" />
+
+  <project name="external.security.rk_tee_user" path="external/security/rk_tee_user" />
+  <project name="u-boot" path="u-boot" />
+  <project name="app.lvgl_demo" path="app/lvgl_demo" />
+  <project name="app.rkipc" path="app/rkipc" />
+  <project name="app.rkpartybox" path="app/rkpartybox" />
+  <project name="app.ipcweb-backend" path="app/ipcweb-backend" />
+  <project name="docs" path="docs" />
+  <project name="docs" path="docs/cn">
+    <linkfile src="Rockchip_Developer_Guide_Linux_Software_CN.pdf" dest="docs/cn/RK3576/Rockchip_Developer_Guide_Linux_Software_CN.pdf" />
+  </project>
+  <project name="docs" path="docs/en">
+    <linkfile src="Rockchip_Developer_Guide_Linux_Software_EN.pdf" dest="docs/en/RK3576/Rockchip_Developer_Guide_Linux_Software_EN.pdf" />
+  </project>
+  <project name="docs.internal" path="docs/cn/RK3576" />
+  <project name="docs.internal" path="docs/en/RK3576" />
+  <project name="app.rkadk" path="app/rkadk" />
+  <project name="yocto.build.conf" path="yocto/build/conf" />
+  <project name="buildroot" path="buildroot">
+    <linkfile src="build/envsetup.sh" dest="envsetup.sh" />
+  </project>
+  <project name="debian" path="debian" />
+  <project name="ubuntu" path="ubuntu" />
+  <project name="device.rockchip" path="device/rockchip">
+    <linkfile src="common/scripts/build.sh" dest="build.sh" />
+    <linkfile src="common/Makefile" dest="Makefile" />
+    <linkfile src="common/scripts/rkflash.sh" dest="rkflash.sh" />
+  </project>
+  <project name="external.drm-cursor" path="external/drm-cursor" />
+  <project name="external.alsa-config" path="external/alsa-config" />
+  <project name="external.camera_engine_rkaiq" path="external/camera_engine_rkaiq" />
+  <project name="external.chromium" path="external/chromium" />
+  <project name="external.common_algorithm" path="external/common_algorithm" />
+  <project name="external.dpdk" path="external/dpdk" />
+  <project name="external.minilogger" path="external/minilogger" />
+  <project name="external.rk_ethercat_release" path="external/rk_ethercat_release" />
+  <project name="external.rk_pcba_test" path="external/rk_pcba_test" />
+  <project name="external.rkscript" path="external/rkscript" />
+  <project name="external.rktoolkit" path="external/rktoolkit" />
+  <project name="external.rkupdate" path="external/rkupdate" />
+  <project name="external.rkwifibt" path="external/rkwifibt" />
+  <project name="external.rkwifibt-app" path="external/rkwifibt-app" />
+  <project name="external.rockit_uvc" path="external/rockit_uvc" />
+  <project name="external.uac_app" path="external/uac_app" />
+  <project name="external.uvc_app" path="external/uvc_app" />
+  <project name="external.gstreamer-rockchip" path="external/gstreamer-rockchip" />
+  <project name="external.avs" path="external/avs" />
+  <project name="external.iva" path="external/iva" />
+  <project name="external.samples" path="external/samples" />
+  <project name="external.libmali" path="external/libmali" />
+  <project name="external.linux-rga" path="external/linux-rga" />
+  <project name="yocto.meta-browser" path="yocto/meta-browser" />
+  <project name="yocto.meta-clang" path="yocto/meta-clang" />
+  <project name="yocto.meta-openembedded" path="yocto/meta-openembedded" />
+  <project name="yocto.poky" path="yocto/poky">
+    <linkfile src="scripts" dest="yocto/scripts" />
+    <linkfile src="bitbake" dest="yocto/bitbake" />
+    <linkfile src="meta-poky" dest="yocto/meta-poky" />
+    <linkfile src=".templateconf" dest="yocto/.templateconf" />
+    <linkfile src="oe-init-build-env" dest="yocto/oe-init-build-env" />
+  </project>
+  <project name="external.recovery" path="external/recovery" />
+  <project name="external.rkfsmk" path="external/rkfsmk" />
+  <project name="external.rockchip-test" path="external/rockchip-test" />
+  <project name="external.rockit" path="external/rockit">
+    <linkfile src="." dest="rtos/bsp/rockchip/common/drivers/rockit" />
+  </project>
+  <project name="external.security.bin" path="external/security/bin" />
+  <project name="tools" path="tools" />
+  <project name="external.xserver" path="external/xserver" />
+  <project name="yocto.meta-rockchip" path="yocto/meta-rockchip" />
+  <project name="kernel-6.1" path="kernel-6.1">
+    <linkfile src="." dest="kernel" />
+  </project>
+  <project name="external.security.librkcrypto" path="external/security/librkcrypto" />
+  <project name="hal" path="hal">
+    <linkfile src="." dest="rtos/bsp/rockchip/common/hal" />
+  </project>
+  <project name="hal.applications" path="hal/applications" />
+  <project name="hal.board" path="hal/board" />
+  <project name="hal.middleware" path="hal/middleware" />
+  <project name="hal.test" path="hal/test" />
+  <project name="external.mpp" path="external/mpp" />
+  <project name="prebuilts.arm-gnu-toolchain-13.2-aarch64-none-elf" path="prebuilts/gcc/linux-x86/aarch64/arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf" />
+  <project name="prebuilts.gcc-arm-10.3-aarch64-none-linux-gnu" path="prebuilts/gcc/linux-x86/aarch64/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu" />
+  <project name="prebuilts.gcc-arm-10.3-arm-none-linux-gnueabihf" path="prebuilts/gcc/linux-x86/arm/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf" />
+  <project name="prebuilts.gcc-arm-none-eabi-10-q4-linux" path="prebuilts/gcc/linux-x86/arm/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux" />
+  <project name="rkbin" path="rkbin" />
+  <project name="external.rknn-toolkit2" path="external/rknn-toolkit2" />
+  <project name="external.rknpu2" path="external/rknpu2" />
+  <project name="docs.rtt-docs" path="docs/rtt-docs" />
+  <project name="rtos" path="rtos" />
+  <project name="rtos.applications.rtthread-apps" path="rtos/applications/rtthread-apps" />
 </manifest>
