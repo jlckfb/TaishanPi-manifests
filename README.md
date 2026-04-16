@@ -1,14 +1,17 @@
 # TaishanPi Manifests
 
 Unified `repo` manifest repository for TaishanPi series development boards.
+
 TaishanPi 系列开发板的 `repo` manifest 统一管理仓库。
 
 Each SDK version lives on its own branch with a `default.xml` and a dedicated setup script.
+
 每个 SDK 版本对应一个独立分支，包含 `default.xml` 和专属安装脚本。
 
 ## One-Click Install / 一键安装
 
 Use the bootstrap script with `-b` to specify the branch:
+
 通过统一入口脚本，指定 `-b` 分支即可自动下载对应版本的安装脚本并执行：
 
 ```bash
@@ -22,6 +25,7 @@ curl -fsSL https://raw.githubusercontent.com/jlckfb/manifests/main/install.sh | 
 ## Manual Download / 手动下载
 
 To fetch source code only (without installing build dependencies), use `repo` directly:
+
 如果只需要拉取源码（不安装编译依赖），可直接使用 `repo`：
 
 ```bash
