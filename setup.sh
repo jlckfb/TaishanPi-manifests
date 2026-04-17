@@ -729,18 +729,54 @@ fetch_lfs_objects() {
     echo ""
     SDK_DIR="$PWD/TaishanPi-3-Linux"
 
-    # Auto-detect repos with LFS files using repo list + git lfs ls-files
-    log_info "Scanning all repositories for LFS files..."
+    # Verify git-lfs is installed
+    if ! command -v git-lfs &>/dev/null; then
+        log_error "git-lfs not found, installing..."
+        wait_for_apt_lock || return 1
+        sudo apt-get install -y git-lfs >> "$LOG_FILE" 2>&1
+        if ! command -v git-lfs &>/dev/null; then
+            log_error "Failed to install git-lfs"
+            return 1
+        fi
+        log_info "git-lfs installed successfully"
+    fi
+
+    # Verify git-lfs version and configuration
+    local lfs_version=$(git lfs version 2>/dev/null | head -1)
+    log_debug "Git LFS version: $lfs_version"
+
+    # Auto-detect repos with LFS files using multiple methods
+    log_info "Scanning all repositories for LFS configuration..."
     local -a lfs_repos=()
+    local -A lfs_sizes=()  # Track estimated sizes
+
     while IFS=: read -r repo_path _; do
         repo_path=$(echo "$repo_path" | sed 's/^ *//;s/ *$//')
         local full_path="$SDK_DIR/$repo_path"
         if [[ -d "$full_path" ]]; then
-            local lfs_count
-            lfs_count=$(git -C "$full_path" lfs ls-files 2>/dev/null | wc -l)
-            if [[ "$lfs_count" -gt 0 ]]; then
+            local has_lfs=false
+
+            # Method 1: Check .gitattributes for filter=lfs
+            if [[ -f "$full_path/.gitattributes" ]] && grep -q "filter=lfs" "$full_path/.gitattributes" 2>/dev/null; then
+                has_lfs=true
+            fi
+
+            # Method 2: Check for .git/lfs directory
+            if [[ -d "$full_path/.git/lfs" ]]; then
+                has_lfs=true
+            fi
+
+            # Method 3: Check git config for lfs settings
+            if git -C "$full_path" config --get-regexp 'lfs\.' &>/dev/null; then
+                has_lfs=true
+            fi
+
+            if $has_lfs; then
                 lfs_repos+=("$repo_path")
-                log_debug "LFS detected: $repo_path ($lfs_count files)"
+                # Estimate LFS size if possible
+                local size_estimate=$(git -C "$full_path" lfs ls-files -s 2>/dev/null | awk '{sum+=$1} END {print sum}')
+                lfs_sizes["$repo_path"]="${size_estimate:-0}"
+                log_debug "LFS configured: $repo_path (estimated: $(numfmt --to=iec ${size_estimate:-0} 2>/dev/null || echo 'unknown'))"
             fi
         fi
     done < <("$HOME/.bin/repo" list 2>/dev/null)
@@ -751,25 +787,141 @@ fetch_lfs_objects() {
         echo ""
         return 0
     fi
-    log_info "Found $total repos with LFS objects"
 
-    local current=0
+    # Calculate total estimated
+    local total_size=0
+    for size in "${lfs_sizes[@]}"; do
+        ((total_size += size))
+    done
+    local total_size_human=$(numfmt --to=iec $total_size 2>/dev/null || echo "unknown")
+    log_info "Found $total repos with LFS objects (estimated total: $total_size_human)"
+
+    # Check available disk space
+    local available_kb=$(df -k "$SDK_DIR" | awk 'NR==2 {print $4}')
+    local available_bytes=$((available_kb * 1024))
+    local required_bytes=$((total_size + 1073741824))  # Add 1GB buffer
+
+    if [[ $total_size -gt 0 && $available_bytes -lt $required_bytes ]]; then
+        log_warn "Disk space may be insufficient for LFS objects"
+        log_warn "Required: $(numfmt --to=iec $required_bytes), Available: $(numfmt --to=iec $available_bytes)"
+        echo ""
+        local continue_anyway=""
+        safe_read "Continue anyway? [y/N]: " continue_anyway
+        echo ""
+        if [[ ! "$continue_anyway" =~ ^[Yy]$ ]]; then
+            log_warn "LFS fetch cancelled by user"
+            return 0
+        fi
+    fi
+
+    # Configure LFS for better reliability
+    export GIT_LFS_SKIP_SMUDGE=0
+
+    # Set LFS transfer timeout (10 minutes per file)
+    git config --global lfs.activitytimeout 600 2>/dev/null || true
+    git config --global lfs.dialtimeout 30 2>/dev/null || true
+
+    # Enable LFS batch API for faster transfers
+    git config --global lfs.batch true 2>/dev/null || true
+
+    # Set concurrent transfers based on network region
+    if [[ "$REGION" == "cn" ]]; then
+        git config --global lfs.concurrenttransfers 3 2>/dev/null || true
+    else
+        git config --global lfs.concurrenttransfers 8 2>/dev/null || true
+    fi
+
+    echo ""
+    local current=0 failed_repos=() partial_repos=()
+    local max_retries=3
+
     for lfs_path in "${lfs_repos[@]}"; do
         ((current++))
         local full_path="$SDK_DIR/$lfs_path"
+        local repo_name=$(basename "$lfs_path")
+
         pushd "$full_path" > /dev/null
-        git lfs install --local >> "$LOG_FILE" 2>&1
 
-        git lfs pull >> "$LOG_FILE" 2>&1 &
-        show_spinner $! "LFS ($current/$total) $lfs_path"
-        local lfs_ret=$?
+        # Ensure LFS is initialized for this repo
+        git lfs install --local >> "$LOG_FILE" 2>&1 || true
 
-        if [[ $lfs_ret -ne 0 ]]; then
-            log_warn "LFS pull failed: $lfs_path"
+        # Check if LFS objects are already present
+        local lfs_files_before=$(git lfs ls-files 2>/dev/null | wc -l)
+
+        # Try pulling with retries
+        local attempt=0 pull_success=false
+        while [[ $attempt -lt $max_retries ]]; do
+            ((attempt++))
+
+            if [[ $attempt -gt 1 ]]; then
+                log_debug "Retry $attempt/$max_retries for $repo_name"
+                sleep $((attempt * 2))  # Exponential backoff
+            fi
+
+            # Pull LFS objects with timeout
+            timeout 600 git lfs pull >> "$LOG_FILE" 2>&1 &
+            local pull_pid=$!
+            show_spinner $pull_pid "LFS ($current/$total) $repo_name (attempt $attempt/$max_retries)"
+            local lfs_ret=$?
+
+            if [[ $lfs_ret -eq 0 ]]; then
+                pull_success=true
+                break
+            elif [[ $lfs_ret -eq 124 ]]; then
+                log_warn "LFS pull timeout for $repo_name"
+                echo "=== LFS PULL TIMEOUT: $repo_name (attempt $attempt) ===" >> "$LOG_FILE"
+            else
+                log_warn "LFS pull failed for $repo_name (exit code: $lfs_ret)"
+                echo "=== LFS PULL FAILED: $repo_name (attempt $attempt, exit $lfs_ret) ===" >> "$LOG_FILE"
+            fi
+        done
+
+        # Verify LFS pull results
+        local lfs_files_after=$(git lfs ls-files 2>/dev/null | wc -l)
+        local lfs_pointers=$(find . -type f -exec file {} \; 2>/dev/null | grep -c "Git LFS pointer" || true)
+
+        if $pull_success && [[ $lfs_files_after -gt 0 ]] && [[ $lfs_pointers -eq 0 ]]; then
+            log_info "LFS ($current/$total) $repo_name - OK ($lfs_files_after files)"
+        elif [[ $lfs_files_after -gt $lfs_files_before ]]; then
+            log_warn "LFS ($current/$total) $repo_name - Partial ($lfs_files_after files, $lfs_pointers pointers remain)"
+            partial_repos+=("$lfs_path")
+        else
+            log_error "LFS ($current/$total) $repo_name - Failed"
+            failed_repos+=("$lfs_path")
         fi
+
         popd > /dev/null
     done
-    log_info "Git LFS objects fetched"
+
+    echo ""
+
+    # Summary
+    local success_count=$((total - ${#failed_repos[@]} - ${#partial_repos[@]}))
+    if [[ ${#failed_repos[@]} -eq 0 && ${#partial_repos[@]} -eq 0 ]]; then
+        log_info "All LFS objects fetched successfully ($success_count/$total repos)"
+    else
+        log_warn "LFS fetch completed with issues:"
+        log_warn "  Success: $success_count/$total"
+        [[ ${#partial_repos[@]} -gt 0 ]] && log_warn "  Partial: ${#partial_repos[@]} repos"
+        [[ ${#failed_repos[@]} -gt 0 ]] && log_warn "  Failed: ${#failed_repos[@]} repos"
+
+        if [[ ${#failed_repos[@]} -gt 0 ]]; then
+            echo ""
+            log_warn "Failed repositories (manual pull required):"
+            for repo in "${failed_repos[@]}"; do
+                log_debug "  cd $SDK_DIR/$repo && git lfs pull"
+            done
+        fi
+
+        if [[ ${#partial_repos[@]} -gt 0 ]]; then
+            echo ""
+            log_warn "Partial repositories (some files may be missing):"
+            for repo in "${partial_repos[@]}"; do
+                log_debug "  cd $SDK_DIR/$repo && git lfs pull"
+            done
+        fi
+    fi
+
     echo ""
 }
 
