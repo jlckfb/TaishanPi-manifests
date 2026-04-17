@@ -190,7 +190,7 @@ SDK_DIR="$PWD/TaishanPi-3-Android14"
 STORAGE_WARNING=""
 
 MANIFEST_BRANCH="android14/tspi-3-260416"
-MANIFEST_URL="https://github.com/jlckfb/manifests.git"
+MANIFEST_URL="https://github.com/jlckfb/TaishanPi-manifests.git"
 REPO_DOWNLOAD_URL="https://cnb.cool/jlckfb/git-repo/-/git/raw/main/repo"
 
 detect_region() {
