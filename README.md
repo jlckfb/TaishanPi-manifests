@@ -1,4 +1,4 @@
-# TaishanPi Manifests
+<h1 align="center">TaishanPi Manifests</h1>
 
 Unified `repo` manifest repository for TaishanPi series development boards.  
 TaishanPi 系列开发板的 `repo` manifest 统一管理仓库。
