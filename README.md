@@ -1,3 +1,7 @@
+<p align="center">
+  <img src=".github/banner.png" alt="LCSC OPENKITS Banner" width="100%">
+</p>
+
 <h1 align="center">TaishanPi Manifests</h1>
 
 Unified `repo` manifest repository for TaishanPi series development boards.  
