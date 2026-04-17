@@ -133,7 +133,7 @@ Examples:
 
 **Official Websites:**
 - [LCKFB China (中文官网)](https://lckfb.com/)
-- [LCKFB Global (海外官网)](https://openkits.easyeda.com/)
+- [LCKFB Global (Global Website)](https://openkits.easyeda.com/)
 
 ---
 
