@@ -755,6 +755,12 @@ fetch_lfs_objects() {
     local -a lfs_repos=()
     local -A lfs_sizes=()  # Track estimated sizes
 
+    # CRITICAL: repo list must be run from within the SDK directory
+    pushd "$SDK_DIR" > /dev/null || {
+        log_error "Failed to enter SDK directory: $SDK_DIR"
+        return 1
+    }
+
     while IFS=: read -r repo_path _; do
         repo_path=$(echo "$repo_path" | sed 's/^ *//;s/ *$//')
         local full_path="$SDK_DIR/$repo_path"
@@ -796,6 +802,8 @@ fetch_lfs_objects() {
             fi
         fi
     done < <("$HOME/.bin/repo" list 2>/dev/null)
+
+    popd > /dev/null
 
     local total=${#lfs_repos[@]}
     if [[ $total -eq 0 ]]; then
