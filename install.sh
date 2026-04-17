@@ -16,7 +16,7 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 MANIFEST_BRANCH=""
-RAW_BASE="https://raw.githubusercontent.com/jlckfb/manifests"
+RAW_BASE="https://raw.githubusercontent.com/jlckfb/TaishanPi-manifests"
 
 usage() {
     echo -e "${BOLD}TaishanPi SDK Install Bootstrap${NC}"
@@ -60,7 +60,7 @@ if [[ $? -ne 0 ]]; then
     echo -e "${RED}  URL: ${SETUP_URL}${NC}"
     echo -e "${RED}  Please check the branch name is correct${NC}"
     echo ""
-    echo "Available branches: https://github.com/jlckfb/manifests/branches"
+    echo "Available branches: https://github.com/jlckfb/TaishanPi-manifests/branches"
     exit 1
 fi
 
