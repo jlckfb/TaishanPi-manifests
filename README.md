@@ -16,10 +16,10 @@ Use the bootstrap script with `-b` to specify the branch:
 
 ```bash
 # Android14 - TaishanPi-3
-curl -fsSL https://raw.githubusercontent.com/jlckfb/manifests/main/install.sh | bash -s -- -b android14/tspi-3-260416
+curl -fsSL https://raw.githubusercontent.com/jlckfb/TaishanPi-manifests/main/install.sh | bash -s -- -b android14/tspi-3-260416
 
 # Linux - TaishanPi-3
-curl -fsSL https://raw.githubusercontent.com/jlckfb/manifests/main/install.sh | bash -s -- -b linux/tspi-3-260402
+curl -fsSL https://raw.githubusercontent.com/jlckfb/TaishanPi-manifests/main/install.sh | bash -s -- -b linux/tspi-3-260402
 ```
 
 ## Manual Download / 手动下载
@@ -39,14 +39,14 @@ export REPO_REV="main"
 
 # Android14
 mkdir -p ~/TaishanPi-3-Android14 && cd ~/TaishanPi-3-Android14
-repo init -u https://github.com/jlckfb/manifests.git -b android14/tspi-3-260416 --depth=1 --no-clone-bundle
+repo init -u https://github.com/jlckfb/TaishanPi-manifests.git -b android14/tspi-3-260416 --depth=1 --no-clone-bundle
 repo sync -c --no-clone-bundle -j$(nproc)
 # Fetch LFS files / 拉取 LFS 大文件
 repo forall -c 'git lfs ls-files 2>/dev/null | head -1 | grep -q . && git lfs pull'
 
 # Linux
 mkdir -p ~/TaishanPi-3-Linux && cd ~/TaishanPi-3-Linux
-repo init -u https://github.com/jlckfb/manifests.git -b linux/tspi-3-260402 --depth=1 --no-clone-bundle
+repo init -u https://github.com/jlckfb/TaishanPi-manifests.git -b linux/tspi-3-260402 --depth=1 --no-clone-bundle
 repo sync -c --no-clone-bundle -j$(nproc)
 # Fetch LFS files / 拉取 LFS 大文件
 repo forall -c 'git lfs ls-files 2>/dev/null | head -1 | grep -q . && git lfs pull'
