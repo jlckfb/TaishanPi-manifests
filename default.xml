@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-  <remote name="cnb" fetch="https://cnb.cool/TaishanPi-Rockchip-Android" />
+  <remote name="cnb" fetch="https://cnb.cool/TaishanPi-3-Rockchip-Android" />
   <default remote="cnb" revision="tspi-3-Android14-260415" />
 
   <project name="RKTools" path="RKTools" revision="tspi-3-Android14-260415" clone-depth="1" />
