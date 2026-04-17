@@ -658,7 +658,7 @@ BASHRC_EOF
 clone_sdk() {
     log_step "Cloning TaishanPi-3 SDK"
     echo ""
-    SDK_DIR="$PWD/TaishanPi-3-Android14"
+    SDK_DIR="$(realpath "$PWD/TaishanPi-3-Android14")"
     mkdir -p "$SDK_DIR"
     pushd "$SDK_DIR" > /dev/null
 
@@ -725,7 +725,8 @@ clone_sdk() {
 fetch_lfs_objects() {
     log_step "Fetching Git LFS objects"
     echo ""
-    SDK_DIR="$PWD/TaishanPi-3-Android14"
+    # SDK_DIR is already set by clone_sdk() and is an absolute path
+    # Current directory should already be inside SDK_DIR after clone_sdk
 
     # Verify git-lfs is installed
     if ! command -v git-lfs &>/dev/null; then
