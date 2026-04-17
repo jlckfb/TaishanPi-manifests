@@ -725,8 +725,14 @@ clone_sdk() {
 fetch_lfs_objects() {
     log_step "Fetching Git LFS objects"
     echo ""
-    # SDK_DIR is already set by clone_sdk() and is an absolute path
-    # Current directory should already be inside SDK_DIR after clone_sdk
+
+    # Ensure SDK_DIR is set - use current directory if not set by clone_sdk
+    if [[ -z "$SDK_DIR" ]]; then
+        SDK_DIR="$PWD"
+        log_debug "SDK_DIR not set, using current directory: $SDK_DIR"
+    fi
+
+    log_debug "SDK_DIR: $SDK_DIR"
 
     # Verify git-lfs is installed
     if ! command -v git-lfs &>/dev/null; then
