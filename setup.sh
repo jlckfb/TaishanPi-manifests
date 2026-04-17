@@ -744,8 +744,8 @@ fetch_lfs_objects() {
     local lfs_version=$(git lfs version 2>/dev/null | head -1)
     log_debug "Git LFS version: $lfs_version"
 
-    # Auto-detect repos with LFS files using multiple methods
-    log_info "Scanning all repositories for LFS configuration..."
+    # Auto-detect repos with LFS files - only check repos that actually have LFS tracked files
+    log_info "Scanning all repositories for LFS tracked files..."
     local -a lfs_repos=()
     local -A lfs_sizes=()  # Track estimated sizes
 
@@ -754,20 +754,31 @@ fetch_lfs_objects() {
         local full_path="$SDK_DIR/$repo_path"
         if [[ -d "$full_path" ]]; then
             local has_lfs=false
+            local lfs_file_count=0
 
-            # Method 1: Check .gitattributes for filter=lfs
+            # Primary method: Check if .gitattributes exists and has filter=lfs
+            # This is the most reliable indicator of intentional LFS usage
             if [[ -f "$full_path/.gitattributes" ]] && grep -q "filter=lfs" "$full_path/.gitattributes" 2>/dev/null; then
-                has_lfs=true
-            fi
+                # Verify there are actual LFS tracked files (not just config)
+                # Use git lfs ls-files to check, but also check for pointer files as fallback
+                lfs_file_count=$(git -C "$full_path" lfs ls-files 2>/dev/null | wc -l)
 
-            # Method 2: Check for .git/lfs directory
-            if [[ -d "$full_path/.git/lfs" ]]; then
-                has_lfs=true
-            fi
+                # If git lfs ls-files returns 0, check for LFS pointer files
+                if [[ $lfs_file_count -eq 0 ]]; then
+                    # Look for files matching patterns in .gitattributes
+                    local lfs_patterns=$(grep "filter=lfs" "$full_path/.gitattributes" | awk '{print $1}')
+                    for pattern in $lfs_patterns; do
+                        # Check if matching files exist
+                        if compgen -G "$full_path/$pattern" > /dev/null 2>&1; then
+                            lfs_file_count=1
+                            break
+                        fi
+                    done
+                fi
 
-            # Method 3: Check git config for lfs settings
-            if git -C "$full_path" config --get-regexp 'lfs\.' &>/dev/null; then
-                has_lfs=true
+                if [[ $lfs_file_count -gt 0 ]]; then
+                    has_lfs=true
+                fi
             fi
 
             if $has_lfs; then
@@ -775,7 +786,7 @@ fetch_lfs_objects() {
                 # Estimate LFS size if possible
                 local size_estimate=$(git -C "$full_path" lfs ls-files -s 2>/dev/null | awk '{sum+=$1} END {print sum}')
                 lfs_sizes["$repo_path"]="${size_estimate:-0}"
-                log_debug "LFS configured: $repo_path (estimated: $(numfmt --to=iec ${size_estimate:-0} 2>/dev/null || echo 'unknown'))"
+                log_debug "LFS detected: $repo_path ($lfs_file_count files, estimated: $(numfmt --to=iec ${size_estimate:-0} 2>/dev/null || echo 'unknown'))"
             fi
         fi
     done < <("$HOME/.bin/repo" list 2>/dev/null)
