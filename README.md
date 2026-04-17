@@ -127,9 +127,13 @@ Examples:
 
 ## 📖 Documentation
 
-- [TaishanPi-3 Linux SDK Documentation](https://cnb.cool/TaishanPi-3-Rockchip-Linux)
-- [TaishanPi-3 Android SDK Documentation](https://cnb.cool/TaishanPi-3-Rockchip-Android)
-- [LCSC OPENKITS Official Website](https://openkits.lcsc.com)
+**TaishanPi Wiki:**
+- [English Documentation](https://wiki.lckfb.com/en/tspi-series/)
+- [中文文档](https://wiki.lckfb.com/zh-hans/tspi-series/)
+
+**Official Websites:**
+- [LCKFB China (中文官网)](https://lckfb.com/)
+- [LCKFB Global (海外官网)](https://openkits.easyeda.com/)
 
 ---
 
