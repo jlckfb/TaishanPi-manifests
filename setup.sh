@@ -814,10 +814,13 @@ fetch_lfs_objects() {
         return 0
     fi
 
-    # Calculate total estimated
+    # Calculate total estimated size
     local total_size=0
     for size in "${lfs_sizes[@]}"; do
-        ((total_size += size))
+        # Skip empty or non-numeric values
+        if [[ -n "$size" && "$size" =~ ^[0-9]+$ ]]; then
+            ((total_size += size))
+        fi
     done
     local total_size_human=$(numfmt --to=iec $total_size 2>/dev/null || echo "unknown")
     log_info "Found $total repos with LFS objects (estimated total: $total_size_human)"
@@ -829,7 +832,9 @@ fetch_lfs_objects() {
 
     if [[ $total_size -gt 0 && $available_bytes -lt $required_bytes ]]; then
         log_warn "Disk space may be insufficient for LFS objects"
-        log_warn "Required: $(numfmt --to=iec $required_bytes), Available: $(numfmt --to=iec $available_bytes)"
+        local required_human=$(numfmt --to=iec $required_bytes 2>/dev/null || echo "${required_bytes} bytes")
+        local available_human=$(numfmt --to=iec $available_bytes 2>/dev/null || echo "${available_bytes} bytes")
+        log_warn "Required: $required_human, Available: $available_human"
         echo ""
         local continue_anyway=""
         safe_read "Continue anyway? [y/N]: " continue_anyway
