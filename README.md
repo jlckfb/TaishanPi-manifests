@@ -18,7 +18,7 @@
 **One-Click Install** - Automatically sets up build environment and downloads SDK:
 
 ```bash
-# Linux SDK (Buildroot/Debian/Yocto)
+# Linux SDK (Buildroot/Debian/Ubuntu)
 curl -fsSL https://raw.githubusercontent.com/jlckfb/TaishanPi-manifests/main/install.sh | bash -s -- -b linux/tspi-3-260402
 
 # Android 14 SDK
