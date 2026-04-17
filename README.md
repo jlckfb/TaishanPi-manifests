@@ -57,7 +57,7 @@ repo forall -c 'git lfs ls-files 2>/dev/null | head -1 | grep -q . && git lfs pu
 | OS / 系统 | Board / 开发板 | Branch / 分支 | Code Hosting / 代码托管 |
 |-----------|---------------|--------------|------------------------|
 | Android14 | TaishanPi-3 (RK3576) | `android14/tspi-3-260416` | [cnb.cool](https://cnb.cool/TaishanPi-3-Rockchip-Android) |
-| Linux | TaishanPi-3 (RK3576) | `linux/tspi-3-260402` | [cnb.cool](https://cnb.cool/TaishanPi-Rockchip-Linux) |
+| Linux | TaishanPi-3 (RK3576) | `linux/tspi-3-260402` | [cnb.cool](https://cnb.cool/TaishanPi-3-Rockchip-Linux) |
 
 ## Repository Structure / 仓库结构
 
