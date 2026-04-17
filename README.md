@@ -120,7 +120,7 @@ Each SDK branch contains:
 Format: `{os}{version}/{board}-{date}`
 
 Examples:
-- `linux/tspi-3-260402 Linux SDK for TaishanPi-3, released 2026-04-02
+- `linux/tspi-3-260402` - Linux SDK for TaishanPi-3, released 2026-04-02
 - `android14/tspi-3-260416` - Android 14 SDK for TaishanPi-3, released 2026-04-16
 
 ---
