@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-  <remote name="cnb" fetch="https://cnb.cool/TaishanPi-Rockchip-Linux" />
+  <remote name="cnb" fetch="https://cnb.cool/TaishanPi-3-Rockchip-Linux" />
   <default remote="cnb" revision="tspi-3-Linux-260402" />
 
   <project name="external.security.rk_tee_user" path="external/security/rk_tee_user" clone-depth="1" />

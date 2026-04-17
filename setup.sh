@@ -527,7 +527,7 @@ install_live_build() {
     echo ""
     local LIVE_BUILD_DIR="/tmp/live-build-$$"
     CLEANUP_FILES+=("$LIVE_BUILD_DIR")
-    git clone https://cnb.cool/TaishanPi-Rockchip-Linux/live-build.git -b "debian/1%20230131" "$LIVE_BUILD_DIR" >> "$LOG_FILE" 2>&1 &
+    git clone https://cnb.cool/TaishanPi-3-Rockchip-Linux/live-build.git -b "debian/1%20230131" "$LIVE_BUILD_DIR" >> "$LOG_FILE" 2>&1 &
     show_spinner $! "Cloning live-build"
     local clone_ret=$?
     if [[ $clone_ret -ne 0 ]]; then
