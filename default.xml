@@ -8,7 +8,7 @@
   <project name="app.lvgl_demo" path="app/lvgl_demo" clone-depth="1" />
   <project name="app.rkipc" path="app/rkipc" clone-depth="1" />
   <project name="app.rkpartybox" path="app/rkpartybox" clone-depth="1" />
-  <project name="app.tspi-overlay-config" path="app/tspi-overlay-config" clone-depth="1" />
+  <project name="app.ovtree" path="app/ovtree" clone-depth="1" />
   <project name="app.ipcweb-backend" path="app/ipcweb-backend" clone-depth="1" />
   <project name="docs" path="docs" clone-depth="1" />
   <project name="docs" path="docs/cn" clone-depth="1">
