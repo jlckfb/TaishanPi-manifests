@@ -36,7 +36,7 @@ curl -fsSL https://raw.githubusercontent.com/jlckfb/TaishanPi-manifests/main/ins
 | **OS** | Ubuntu 22.04 LTS (Jammy Jellyfish) |
 | **CPU** | x86_64 with VT-x/AMD-V support |
 | **RAM** | 16GB+ recommended |
-| **Storage** | Linux: 120GB+ / Android: 300GB+ |
+| **Storage** | Linux: 120GB+ / Android: 300GB+ (source + build output) |
 | **Network** | Stable internet connection |
 
 **Note**: The installer automatically checks system compatibility and installs required dependencies.
@@ -45,10 +45,10 @@ curl -fsSL https://raw.githubusercontent.com/jlckfb/TaishanPi-manifests/main/ins
 
 ## 📦 Available SDKs
 
-| Platform | Board | Branch | Size | Code Hosting |
+| Platform | Board | Branch | Download | Disk Needed | Code Hosting |
 |----------|-------|--------|------|--------------|
-| **Linux** | TaishanPi-3 | `linux/tspi-3-260402` | ~30GB | [cnb.cool](https://cnb.cool/TaishanPi-3-Rockchip-Linux) |
-| **Android 14** | TaishanPi-3 | `android14/tspi-3-260416` | ~150GB | [cnb.cool](https://cnb.cool/TaishanPi-3-Rockchip-Android) |
+| **Linux** | TaishanPi-3 | `linux/tspi-3-260402` | ~30GB | 120GB+ | [cnb.cool](https://cnb.cool/TaishanPi-3-Rockchip-Linux) |
+| **Android 14** | TaishanPi-3 | `android14/tspi-3-260416` | ~100GB | 300GB+ | [cnb.cool](https://cnb.cool/TaishanPi-3-Rockchip-Android) |
 
 ---
 
