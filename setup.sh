@@ -203,7 +203,7 @@ detect_region() {
     fi
     log_step "Detecting network environment"
     echo ""
-    local cn_mirrors=("mirrors.cernet.edu.cn" "mirrors.tuna.tsinghua.edu.cn")
+    local cn_mirrors=("mirrors.tuna.tsinghua.edu.cn" "mirrors.ustc.edu.cn" "mirrors.bfsu.edu.cn")
     local global_mirrors=("archive.ubuntu.com" "mirrors.kernel.org")
     local cn_latency=9999 global_latency=9999
     log_debug "Testing China mirror latency..."
@@ -386,7 +386,9 @@ configure_apt_mirror() {
     if [[ "$REGION" == "cn" ]]; then
         MIRROR_LIST=(
             "http://mirrors.tuna.tsinghua.edu.cn/ubuntu/|Tsinghua"
-            "http://mirrors.aliyun.com/ubuntu/|Aliyun"
+            "http://mirrors.ustc.edu.cn/ubuntu/|USTC"
+            "http://mirrors.bfsu.edu.cn/ubuntu/|BFSU"
+            "http://mirrors.pku.edu.cn/ubuntu/|PKU"
             "http://mirrors.cernet.edu.cn/ubuntu/|CERNET"
         )
     else
@@ -481,15 +483,72 @@ install_dependencies() {
     local pkg_ret=$?
     echo "=== apt-get install END (exit=$pkg_ret) ===" >> "$LOG_FILE"
 
-    # If install still failed with fetch errors, retry once with --fix-missing
+    # If install failed with download/fetch errors, try alternative mirrors then --fix-missing
     if [[ $pkg_ret -ne 0 ]]; then
-        if grep -qE "(404|Failed to fetch)" "$LOG_FILE"; then
-            log_warn "Some packages failed to fetch, retrying with --fix-missing..."
-            wait_for_apt_lock || return 1
-            sudo apt-get install -y --fix-missing "${PACKAGES[@]}" >> "$LOG_FILE" 2>&1 &
-            show_spinner $! "Retrying package installation"
-            pkg_ret=$?
-            echo "=== apt-get install RETRY END (exit=$pkg_ret) ===" >> "$LOG_FILE"
+        # Match both English and Chinese apt-get download error messages
+        if grep -qE "(404|Failed to fetch|无法下载|无法获取|对方关闭了连接|读取数据时出错|Connection failed|连接失败|Cannot initiate)" "$LOG_FILE"; then
+            log_warn "Download errors detected, switching mirrors and retrying..."
+
+            # Build fallback mirror list (different from the current one)
+            local -a FALLBACK_MIRRORS=()
+            if [[ "$REGION" == "cn" ]]; then
+                FALLBACK_MIRRORS=(
+                    "http://mirrors.tuna.tsinghua.edu.cn/ubuntu/|Tsinghua"
+                    "http://mirrors.ustc.edu.cn/ubuntu/|USTC"
+                    "http://mirrors.bfsu.edu.cn/ubuntu/|BFSU"
+                    "http://mirrors.pku.edu.cn/ubuntu/|PKU"
+                    "http://mirrors.cernet.edu.cn/ubuntu/|CERNET"
+                )
+            else
+                FALLBACK_MIRRORS=(
+                    "http://archive.ubuntu.com/ubuntu/|Official"
+                    "http://mirrors.kernel.org/ubuntu/|Kernel"
+                )
+            fi
+
+            # Save current sources.list if not already backed up
+            if [[ ! -f /etc/apt/sources.list.bak ]]; then
+                sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak 2>/dev/null || true
+            fi
+
+            local mirror_ok=false
+            for entry in "${FALLBACK_MIRRORS[@]}"; do
+                local mirror_url="${entry%%|*}"
+                local mirror_name="${entry##*|}"
+
+                log_info "Trying mirror: $mirror_name ($mirror_url)"
+
+                local sources_content="deb ${mirror_url} jammy main restricted universe multiverse
+deb ${mirror_url} jammy-updates main restricted universe multiverse
+deb ${mirror_url} jammy-backports main restricted universe multiverse
+deb ${mirror_url} jammy-security main restricted universe multiverse"
+                echo "$sources_content" | sudo tee /etc/apt/sources.list > /dev/null
+
+                wait_for_apt_lock || continue
+                sudo apt-get update -y >> "$LOG_FILE" 2>&1 &
+                show_spinner $! "Updating package lists ($mirror_name)"
+
+                wait_for_apt_lock || continue
+                sudo apt-get install -y "${PACKAGES[@]}" >> "$LOG_FILE" 2>&1 &
+                show_spinner $! "Installing packages ($mirror_name)"
+                pkg_ret=$?
+                echo "=== apt-get install MIRROR=$mirror_name END (exit=$pkg_ret) ===" >> "$LOG_FILE"
+
+                if [[ $pkg_ret -eq 0 ]]; then
+                    mirror_ok=true
+                    break
+                fi
+            done
+
+            # Last resort: --fix-missing (may leave system with missing packages)
+            if ! $mirror_ok; then
+                log_warn "All mirrors failed, trying --fix-missing as last resort..."
+                wait_for_apt_lock || return 1
+                sudo apt-get install -y --fix-missing "${PACKAGES[@]}" >> "$LOG_FILE" 2>&1 &
+                show_spinner $! "Installing packages (--fix-missing)"
+                pkg_ret=$?
+                echo "=== apt-get install FIX-MISSING END (exit=$pkg_ret) ===" >> "$LOG_FILE"
+            fi
         fi
     fi
 
