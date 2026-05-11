@@ -46,7 +46,7 @@ curl -fsSL https://raw.githubusercontent.com/jlckfb/TaishanPi-manifests/main/ins
 ## 📦 Available SDKs
 
 | Platform | Board | Branch | Download | Disk Needed | Code Hosting |
-|----------|-------|--------|------|--------------|
+|----------|-------|--------|----------|-------------|---------------|
 | **Linux** | TaishanPi-3 | `linux/tspi-3-260402` | ~30GB | 120GB+ | [cnb.cool](https://cnb.cool/TaishanPi-3-Rockchip-Linux) |
 | **Android 14** | TaishanPi-3 | `android14/tspi-3-260416` | ~100GB | 300GB+ | [cnb.cool](https://cnb.cool/TaishanPi-3-Rockchip-Android) |
 
