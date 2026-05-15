@@ -9,6 +9,9 @@
 
 set -uo pipefail
 
+# Non-interactive APT: prevent debconf from blocking on input (e.g. tzdata config)
+export DEBIAN_FRONTEND=noninteractive
+
 # Ensure sbin directories are in PATH (needed for lsmod, modprobe, etc.)
 export PATH="/usr/sbin:/sbin:$PATH"
 
@@ -415,7 +418,7 @@ deb ${MIRROR_URL} jammy-backports main restricted universe multiverse"
         echo "$sources_content" | sudo tee /etc/apt/sources.list > /dev/null
 
         wait_for_apt_lock || return 1
-        sudo apt-get update -y >> "$LOG_FILE" 2>&1 &
+        sudo DEBIAN_FRONTEND=noninteractive apt-get update -y >> "$LOG_FILE" 2>&1 &
         show_spinner $! "Updating package lists ($MIRROR_NAME)"
         local apt_ret=$?
         if [[ $apt_ret -ne 0 ]]; then
@@ -436,7 +439,7 @@ deb ${MIRROR_URL} jammy-backports main restricted universe multiverse"
         log_warn "All mirrors failed, restoring original sources.list"
         sudo cp /etc/apt/sources.list.bak /etc/apt/sources.list 2>/dev/null || true
         wait_for_apt_lock || return 1
-        sudo apt-get update -y >> "$LOG_FILE" 2>&1 &
+        sudo DEBIAN_FRONTEND=noninteractive apt-get update -y >> "$LOG_FILE" 2>&1 &
         show_spinner $! "Updating package lists (original)"
         if apt-cache show cmake > /dev/null 2>&1; then
             log_info "Using original APT sources"
@@ -474,11 +477,11 @@ install_dependencies() {
     CLEANUP_FILES+=("$apt_install_log")
 
     wait_for_apt_lock || return 1
-    sudo apt-get update -y >> "$LOG_FILE" 2>&1 &
+    sudo DEBIAN_FRONTEND=noninteractive apt-get update -y >> "$LOG_FILE" 2>&1 &
     show_spinner $! "Updating package lists"
 
     wait_for_apt_lock || return 1
-    sudo apt-get install -y "${PACKAGES[@]}" >> "$LOG_FILE" 2>&1 &
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${PACKAGES[@]}" >> "$LOG_FILE" 2>&1 &
     show_spinner $! "Installing system packages"
     local pkg_ret=$?
     echo "=== apt-get install END (exit=$pkg_ret) ===" >> "$LOG_FILE"
@@ -525,11 +528,11 @@ deb ${mirror_url} jammy-security main restricted universe multiverse"
                 echo "$sources_content" | sudo tee /etc/apt/sources.list > /dev/null
 
                 wait_for_apt_lock || continue
-                sudo apt-get update -y >> "$LOG_FILE" 2>&1 &
+                sudo DEBIAN_FRONTEND=noninteractive apt-get update -y >> "$LOG_FILE" 2>&1 &
                 show_spinner $! "Updating package lists ($mirror_name)"
 
                 wait_for_apt_lock || continue
-                sudo apt-get install -y "${PACKAGES[@]}" >> "$LOG_FILE" 2>&1 &
+                sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${PACKAGES[@]}" >> "$LOG_FILE" 2>&1 &
                 show_spinner $! "Installing packages ($mirror_name)"
                 pkg_ret=$?
                 echo "=== apt-get install MIRROR=$mirror_name END (exit=$pkg_ret) ===" >> "$LOG_FILE"
@@ -544,7 +547,7 @@ deb ${mirror_url} jammy-security main restricted universe multiverse"
             if ! $mirror_ok; then
                 log_warn "All mirrors failed, trying --fix-missing as last resort..."
                 wait_for_apt_lock || return 1
-                sudo apt-get install -y --fix-missing "${PACKAGES[@]}" >> "$LOG_FILE" 2>&1 &
+                sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --fix-missing "${PACKAGES[@]}" >> "$LOG_FILE" 2>&1 &
                 show_spinner $! "Installing packages (--fix-missing)"
                 pkg_ret=$?
                 echo "=== apt-get install FIX-MISSING END (exit=$pkg_ret) ===" >> "$LOG_FILE"
@@ -635,7 +638,7 @@ configure_qemu() {
     if ! command -v update-binfmts &>/dev/null; then
         log_warn "binfmt-support not found, installing..."
         wait_for_apt_lock || return 1
-        sudo apt-get install -y binfmt-support qemu-user-static >> "$LOG_FILE" 2>&1 &
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y binfmt-support qemu-user-static >> "$LOG_FILE" 2>&1 &
         show_spinner $! "Installing binfmt-support"
     fi
     sudo update-binfmts --enable qemu-aarch64 2>/dev/null || true
@@ -799,7 +802,7 @@ fetch_lfs_objects() {
     if ! command -v git-lfs &>/dev/null; then
         log_error "git-lfs not found, installing..."
         wait_for_apt_lock || return 1
-        sudo apt-get install -y git-lfs >> "$LOG_FILE" 2>&1
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git-lfs >> "$LOG_FILE" 2>&1
         if ! command -v git-lfs &>/dev/null; then
             log_error "Failed to install git-lfs"
             return 1
