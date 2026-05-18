@@ -757,11 +757,13 @@ clone_sdk() {
 
     local max_retries=3
     local sync_ret=1
+    local -a sync_jobs=(8 4 2)
     for attempt in $(seq 1 $max_retries); do
-        echo "=== repo sync attempt $attempt/$max_retries START ===" >> "$LOG_FILE"
+        local jobs=${sync_jobs[$((attempt-1))]}
+        echo "=== repo sync attempt $attempt/$max_retries (j=$jobs) START ===" >> "$LOG_FILE"
 
-        "$HOME/.bin/repo" sync -c --no-clone-bundle -j$(nproc) >> "$LOG_FILE" 2>&1 &
-        show_spinner $! "Syncing SDK repositories (attempt $attempt/$max_retries)"
+        "$HOME/.bin/repo" sync -c --no-clone-bundle -j"$jobs" >> "$LOG_FILE" 2>&1 &
+        show_spinner $! "Syncing SDK repositories (attempt $attempt/$max_retries, j=$jobs)"
         sync_ret=$?
 
         echo "=== repo sync attempt $attempt END (exit=$sync_ret) ===" >> "$LOG_FILE"
